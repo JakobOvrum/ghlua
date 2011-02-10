@@ -1,4 +1,3 @@
-local setmetatable = setmetatable
 local table = table
 local error = error
 local require = require

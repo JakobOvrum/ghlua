@@ -12,6 +12,7 @@ _REPO = {}
 local repo = _REPO
 
 require "ghlua.commit"
+require "ghlua.network"
 
 function repository(username, repository)
 	return setmetatable({
@@ -20,6 +21,13 @@ function repository(username, repository)
 	}, {__index = repo})
 end
 
+function repo:getOwner()
+	return self.user
+end
+
+function repo:getName()
+	return self.repo
+end
 
 function repo:action(_action, ...)
 	return action("repos", _action, self.user, self.repo, ...)
@@ -57,10 +65,15 @@ function repo:getWatchers(showFull)
 	return get(("repos/show/%s/%s/watchers"):format(self.user, self.repo), args).watchers
 end
 
-function repo:getNetwork()
+-- also returns the main repo as the first result
+function repo:getForks()
 	return self:action("show", "network").network
 end
 
 function repo:getLanguages()
 	return self:action("show", "languages").languages
+end
+
+function repo:getNetwork()
+	return network(self.user, self.repo)
 end
