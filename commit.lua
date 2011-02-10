@@ -38,7 +38,7 @@ local function pageIterator(command)
 			end
 		end
 		return commit
-	end	
+	end
 end
 
 function repo:commits(branch)
