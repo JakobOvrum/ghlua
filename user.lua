@@ -30,3 +30,7 @@ end
 function usr:getFollowers()
 	return self:action("show", "followers").users
 end
+
+function usr:getWatching()
+	return action("repos", "watched", self.name).repositories
+end
