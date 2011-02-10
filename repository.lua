@@ -41,3 +41,27 @@ end
 function repo:getTags()
 	return self:action("show", "tags").tags
 end
+
+function repo:getCollaborators()
+	return self:action("show", "collaborators").collaborators
+end
+
+function repo:getContributors(showAnon)
+	return self:action("show", "contributors", showAnon and "anon" or "").contributors
+end
+
+function repo:getWatchers(showFull)
+	local args
+	if showFull then
+		args = {full = 1}
+	end
+	return get(("repos/show/%s/%s/watchers"):format(self.user, self.repo), args).watchers
+end
+
+function repo:getNetwork()
+	return self:action("show", "network").network
+end
+
+function repo:getLanguages()
+	return self:action("show", "languages").languages
+end
