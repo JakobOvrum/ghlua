@@ -4,6 +4,7 @@ local pairs = pairs
 local type = type
 local request = require("socket.http").request
 local decode = require("json").decode
+local getinfo = require("debug").getinfo
 
 local print = print
 
@@ -21,22 +22,18 @@ local function postArgs(t)
 	return table.concat(buffer, "&")
 end
 
-local function apiUrl(command)
-	return "http://github.com/api/v2/json/" .. command
-end
+_APIURL = "http://github.com/api/v2/json/"
 
-local function apiUrlArgs(command, args)
-	return table.concat{"http://github.com/api/v2/json/", command, "?", postArgs(args)}
+function apiUrl(command, args)
+	if args then
+		return table.concat{_APIURL, command, "?", postArgs(args)}
+	else
+		return  _APIURL .. command
+	end
 end
-
 
 function tryget(command, args)
-	local url	
-	if args then
-		url = apiUrlArgs(command, args)
-	else
-		url = apiUrl(command)
-	end
+	local url = apiUrl(command, args)
 	
 	print(url)
 	local body, status, headers, statusline = request(url)
@@ -63,4 +60,14 @@ end
 
 function action(...)
 	return get(table.concat({...}, "/"))
+end
+
+function checkArg(argn, expectedType, arg)
+    local t = type(arg)
+    if t ~= expectedType then
+        local name = getinfo(2, "n").name
+        error(("bad argument #%d to %s (%s expected, got %s)"):format(argn, name, expectedType, t), 3)
+    end
+
+    return arg
 end
