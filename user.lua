@@ -34,3 +34,7 @@ end
 function usr:getWatching()
 	return action("repos", "watched", self.name).repositories
 end
+
+function usr:getRepositories()
+	return action("repos", "show", self.name).repositories
+end
