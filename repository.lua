@@ -4,7 +4,6 @@ local error = error
 local require = require
 local assert = assert
 
---- GitHub API
 module "ghlua"
 
 require "ghlua.util"
