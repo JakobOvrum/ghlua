@@ -4,3 +4,4 @@ local require = require
 module "ghlua"
 
 require "ghlua.repository"
+require "ghlua.user"
