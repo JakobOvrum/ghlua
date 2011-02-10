@@ -2,6 +2,8 @@ local table = table
 local error = error
 local pairs = pairs
 local type = type
+local setmetatable = setmetatable
+local tonumber = tonumber
 local request = require("socket.http").request
 local decode = require("json").decode
 local getinfo = require("debug").getinfo
@@ -70,4 +72,26 @@ function checkArg(argn, expectedType, arg)
     end
 
     return arg
+end
+
+function readonly(t)
+	return setmetatable({}, {__index = t, __newindex = function() error("table is readonly", 2) end})
+end
+
+-- Matches three different kinds of github time formats
+function time(s)
+	local year, month, day = s:match("(%d+)%-(%d+)%-(%d+)")
+	local hour, minute, second = s:match("(%d+):(%d+):(%d+)")
+	local timezone = s:match("%-(%d+):%d+$")
+	return {
+		year = tonumber(year);
+		month = tonumber(month);
+		day = tonumber(day);
+
+		hour = tonumber(hour);
+		minute = tonumber(minute);
+		second = tonumber(second);
+		
+		timezone = tonumber(timezone);
+	}
 end
