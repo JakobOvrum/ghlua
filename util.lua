@@ -81,8 +81,17 @@ end
 -- Matches three different kinds of github time formats
 function time(s)
 	local year, month, day = s:match("(%d+)%-(%d+)%-(%d+)")
+	if not year then
+		year, month, day = s:match("(%d+)/(%d+)/(%d+)")
+	end
+
 	local hour, minute, second = s:match("(%d+):(%d+):(%d+)")
+	
 	local timezone = s:match("%-(%d+):%d+$")
+	if not timezone then
+		timezone = s:match("%-(%d-)0*$")
+	end
+
 	return {
 		year = tonumber(year);
 		month = tonumber(month);
