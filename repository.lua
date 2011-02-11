@@ -14,6 +14,12 @@ local repo = _REPO
 require "ghlua.commit"
 require "ghlua.network"
 
+--- Link to a repository.
+-- This object gets information about a repository, its users, its commits and fork network.
+-- @param username owner of repository
+-- @param repository name of repository
+-- @returns new repository object
+-- @note this function does not send any requests to github. To verify that this repository is valid, see repo:getInfo().
 function repository(username, repository)
 	return setmetatable({
 		user = assert(username);
