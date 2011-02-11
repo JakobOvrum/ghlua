@@ -33,17 +33,23 @@ local function get(url)
 end
 
 function network(username, repository)
+	local url = baseUrl(assert(username), assert(repository))
 	local o = setmetatable({
-		user = assert(username);
-		repo = assert(repository);
+		user = username;
+		repo = repository;
 		nextCommit = 1;
+		baseUrl = url;
+		updateUrl = url .. "network_meta";
 	}, {__index = net})
 	
-	local url = baseUrl(username, repository)
-	o.meta = get(url .. "network_meta")
-	o.requestUrl = reqUrl(url, o.meta.nethash)
+	o:update()
 
 	return o
+end
+
+function net:update()
+	self.meta = get(self.updateUrl)
+	self.requestUrl = reqUrl(self.baseUrl, self.meta.nethash)
 end
 
 function net:getOwner()
@@ -55,7 +61,9 @@ function net:getName()
 end
 
 function net:getInfo()
-	return readonly(self.meta)
+	if self.meta then
+		return readonly(self.meta)
+	end
 end
 
 function net:getRange(start, stop)
@@ -69,19 +77,23 @@ end
 
 -- !!
 function net:changes()
-	local function eat()
-		local stop = self.nextCommit + 100
-		local range = self:getRange(self.nextCommit, stop)
-		self.nextCommit = self.nextCommit + #range
-		return range
+	if self.nextCommit >= #self.meta.dates then
+		return function() end
 	end
 
-	local commits = eat()
+	local function eat()
+		local stop = self.nextCommit + 99
+		local range = self:getRange(self.nextCommit, stop)
+		self.nextCommit = self.nextCommit + #range
+		return range, #range == 100 and self.nextCommit < #self.meta.dates
+	end
+
+	local commits, more = eat()
 	local i = 1
 	return function()
 		local commit = commits[i]
-		if not commit then
-			commits = eat()
+		if not commit and more then
+			commits, more = eat()
 			commit = commits[1]
 			i = 2
 		end
