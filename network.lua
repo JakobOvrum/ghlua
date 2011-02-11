@@ -75,7 +75,6 @@ function net:getChunk(n)
 	return self:getRange(n, n)[1]
 end
 
--- !!
 function net:changes()
 	if self.nextCommit >= #self.meta.dates then
 		return function() end
@@ -100,4 +99,8 @@ function net:changes()
 		i = i + 1
 		return commit
 	end
+end
+
+function net:skipChanges()
+	self.nextCommit = #self.meta.dates
 end
