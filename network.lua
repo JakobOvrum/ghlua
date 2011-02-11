@@ -67,8 +67,12 @@ function net:getInfo()
 end
 
 function net:getRange(start, stop)
-	local url = self.requestUrl:format(start, stop)
+	local url = self.requestUrl:format(start, stop or (self:getSize() - 1))
 	return get(url).commits
+end
+
+function net:getSize()
+	return #self.meta.dates
 end
 
 function net:getChunk(n)
